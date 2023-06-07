@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">ImproGame</string>
+    <string name="end_round">Завершить Раунд</string>
 </resources>
