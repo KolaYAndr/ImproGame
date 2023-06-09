@@ -17,6 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -32,10 +34,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -72,8 +77,8 @@ fun MainScreen() {
     BackgroundInit()
     //добавить бокс для отмены и скрытия счёта
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
-        val fontSizeSmall = 28.sp
-        val fontSizeLarge = 30.sp
+        val fontSizeSmall = 26.sp
+        val fontSizeLarge = 28.sp
         val verticalPadding = 2.dp
         val horizontalPadding = 0.dp
         val fontSize = 24.sp
@@ -81,12 +86,14 @@ fun MainScreen() {
         val fraction = 0.3f
         val boxPadding = 5.dp
 
-        val teamName1 = remember { mutableStateOf("Team 1") }
-        val teamName2 = remember { mutableStateOf("Team 2") }
+        val teamName1 = remember { mutableStateOf("") }
+        val teamName2 = remember { mutableStateOf("") }
         val scoreCounterTeam1 = remember { mutableStateOf(0) }
         val scoreCounterTeam2 = remember { mutableStateOf(0) }
         val roundScoreCounterTeam1 = remember { mutableStateOf(0) }
         val roundScoreCounterTeam2 = remember { mutableStateOf(0) }
+
+        val focusManager = LocalFocusManager.current
 
         Box(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -111,6 +118,11 @@ fun MainScreen() {
                                 fontSizeLarge,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center
+                            ),
+                            keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
+                            keyboardOptions = KeyboardOptions(
+                                KeyboardCapitalization.Words,
+                                imeAction = ImeAction.Done
                             )
                         )
                         Text(
@@ -140,6 +152,11 @@ fun MainScreen() {
                                 fontSizeLarge,
                                 fontWeight = FontWeight.Bold,
                                 textAlign = TextAlign.Center
+                            ),
+                            keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
+                            keyboardOptions = KeyboardOptions(
+                                KeyboardCapitalization.Words,
+                                imeAction = ImeAction.Done
                             )
                         )
                         Text(
