@@ -57,23 +57,66 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
+                    MainScreen(
+                        Handler.nameTeam1,
+                        Handler.nameTeam2,
+                        Handler.scoreTeam1,
+                        Handler.scoreTeam2,
+                        Handler.roundScoreTeam1,
+                        Handler.roundScoreTeam2
+                    )
                 }
             }
         }
     }
+
+    object Handler {
+        var scoreTeam1: Int = 0
+        var scoreTeam2: Int = 0
+        var roundScoreTeam1: Int = 0
+        var roundScoreTeam2: Int = 0
+        var nameTeam1: String = ""
+        var nameTeam2: String = ""
+
+        fun increaseRoundScoreTeam1() {
+            roundScoreTeam1++
+        }
+
+        fun increaseRoundScoreTeam2() {
+            roundScoreTeam2++
+        }
+
+        fun swap() {
+            scoreTeam1 += roundScoreTeam1
+            scoreTeam2 += roundScoreTeam2
+
+            roundScoreTeam1 = 0
+            roundScoreTeam2 = 0
+        }
+    }
 }
+
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
     ImproGameTheme {
-        MainScreen()
+        MainScreen(
+            MainActivity.Handler.nameTeam1,
+            MainActivity.Handler.nameTeam2,
+            MainActivity.Handler.scoreTeam1,
+            MainActivity.Handler.scoreTeam2,
+            MainActivity.Handler.roundScoreTeam1,
+            MainActivity.Handler.roundScoreTeam2
+        )
     }
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(
+    nameTeam1: String, nameTeam2: String, scoreTeam1: Int, scoreTeam2: Int,
+    roundScoreTeam1: Int, roundScoreTeam2: Int
+) {
     BackgroundInit()
     //добавить бокс для отмены и скрытия счёта
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
@@ -86,12 +129,12 @@ fun MainScreen() {
         val fraction = 0.3f
         val boxPadding = 5.dp
 
-        val teamName1 = remember { mutableStateOf("") }
-        val teamName2 = remember { mutableStateOf("") }
-        val scoreCounterTeam1 = remember { mutableStateOf(0) }
-        val scoreCounterTeam2 = remember { mutableStateOf(0) }
-        val roundScoreCounterTeam1 = remember { mutableStateOf(0) }
-        val roundScoreCounterTeam2 = remember { mutableStateOf(0) }
+        val teamName1 = remember { mutableStateOf(nameTeam1) }
+        val teamName2 = remember { mutableStateOf(nameTeam2) }
+        val scoreCounterTeam1 = remember { mutableStateOf(scoreTeam1) }
+        val scoreCounterTeam2 = remember { mutableStateOf(scoreTeam2) }
+        val roundScoreCounterTeam1 = remember { mutableStateOf(roundScoreTeam1) }
+        val roundScoreCounterTeam2 = remember { mutableStateOf(roundScoreTeam2) }
 
         val focusManager = LocalFocusManager.current
 
@@ -112,6 +155,7 @@ fun MainScreen() {
                             value = teamName1.value,
                             onValueChange = { newText ->
                                 teamName1.value = newText
+                                MainActivity.Handler.nameTeam1 = newText
                             },
                             textStyle = TextStyle(
                                 Color.Red,
@@ -144,6 +188,7 @@ fun MainScreen() {
                             value = teamName2.value,
                             onValueChange = { newText ->
                                 teamName2.value = newText
+                                MainActivity.Handler.nameTeam2 = newText
                             },
                             modifier = Modifier
                                 .background(color = Color.Transparent),
@@ -180,6 +225,8 @@ fun MainScreen() {
                     scoreCounterTeam2.value += roundScoreCounterTeam2.value
                     roundScoreCounterTeam1.value = 0
                     roundScoreCounterTeam2.value = 0
+
+                    MainActivity.Handler.swap()
                 },
                 modifier = Modifier
                     .background(Color.Transparent)
@@ -217,6 +264,7 @@ fun MainScreen() {
                         Button(
                             onClick = {
                                 roundScoreCounterTeam1.value++
+                                MainActivity.Handler.increaseRoundScoreTeam1()
                             },
                             colors = ButtonDefaults.buttonColors(Color.Red), modifier = Modifier
                                 .fillMaxHeight(fraction)
@@ -239,6 +287,7 @@ fun MainScreen() {
                         Button(
                             onClick = {
                                 roundScoreCounterTeam2.value++
+                                MainActivity.Handler.increaseRoundScoreTeam2()
                             },
                             colors = ButtonDefaults.buttonColors(Color.Blue), modifier = Modifier
                                 .fillMaxHeight(fraction)
