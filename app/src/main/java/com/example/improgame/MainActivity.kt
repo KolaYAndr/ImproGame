@@ -15,12 +15,16 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -90,12 +94,17 @@ class MainActivity : ComponentActivity() {
             roundScoreTeam2++
         }
 
-        fun swap() {
+        fun endRound() {
             scoreTeam1 += roundScoreTeam1
             scoreTeam2 += roundScoreTeam2
 
             roundScoreTeam1 = 0
             roundScoreTeam2 = 0
+        }
+        fun switchTeams() {
+            val name1 = nameTeam1
+            nameTeam1 = nameTeam2
+            nameTeam2 = name1
         }
     }
 }
@@ -265,7 +274,7 @@ private fun EndRoundButton(
                 roundScoreCounterTeam1.value = 0
                 roundScoreCounterTeam2.value = 0
 
-                MainActivity.Handler.swap()
+                MainActivity.Handler.endRound()
             },
             modifier = Modifier
                 .background(Color.Transparent)
@@ -294,77 +303,97 @@ private fun TeamsAndScore(
     scoreCounterTeam2: MutableState<Int>
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Box(modifier = Modifier.fillMaxWidth(0.5f)) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    TextField(
-                        colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedContainerColor = Color.Transparent,
-                        ),
-                        value = teamName1.value,
-                        onValueChange = { newText ->
-                            teamName1.value = newText
-                            MainActivity.Handler.nameTeam1 = newText
-                        },
-                        textStyle = TextStyle(
-                            Color.Red,
-                            fontSizeLarge,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        ),
-                        keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
-                        keyboardOptions = KeyboardOptions(
-                            KeyboardCapitalization.Words,
-                            imeAction = ImeAction.Done
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Box(modifier = Modifier.fillMaxWidth(0.5f)) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TextField(
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedContainerColor = Color.Transparent,
+                            ),
+                            value = teamName1.value,
+                            onValueChange = { newText ->
+                                teamName1.value = newText
+                                MainActivity.Handler.nameTeam1 = newText
+                            },
+                            textStyle = TextStyle(
+                                Color.Red,
+                                fontSizeLarge,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            ),
+                            keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
+                            keyboardOptions = KeyboardOptions(
+                                KeyboardCapitalization.Words,
+                                imeAction = ImeAction.Done
+                            ),
+                            modifier = Modifier
+                                .requiredHeight(65.dp)
+                                .clip(RoundedCornerShape(20.dp))
                         )
-                    )
-                    Text(
-                        text = "${scoreCounterTeam1.value}",
-                        fontSize = fontSizeSmall,
-                        modifier = Modifier.padding(horizontalPadding, verticalPadding)
-                    )
+                        Text(
+                            text = "${scoreCounterTeam1.value}",
+                            fontSize = fontSizeSmall,
+                            modifier = Modifier.padding(horizontalPadding, verticalPadding)
+                        )
+                    }
+                }
+                Box {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        TextField(
+                            colors = TextFieldDefaults.colors(
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedContainerColor = Color.Transparent,
+                            ),
+                            value = teamName2.value,
+                            onValueChange = { newText ->
+                                teamName2.value = newText
+                                MainActivity.Handler.nameTeam2 = newText
+                            },
+                            textStyle = TextStyle(
+                                Color.Blue,
+                                fontSizeLarge,
+                                fontWeight = FontWeight.Bold,
+                                textAlign = TextAlign.Center
+                            ),
+                            keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
+                            keyboardOptions = KeyboardOptions(
+                                KeyboardCapitalization.Words,
+                                imeAction = ImeAction.Done
+                            ),
+                            modifier = Modifier
+                                .requiredHeight(65.dp)
+                                .clip(RoundedCornerShape(20.dp))
+                        )
+                        Text(
+                            text = "${scoreCounterTeam2.value}",
+                            fontSize = fontSizeSmall,
+                            modifier = Modifier.padding(horizontalPadding, verticalPadding)
+                        )
+                    }
                 }
             }
-            Box {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    TextField(
-                        colors = TextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedContainerColor = Color.Transparent
-                        ),
-                        value = teamName2.value,
-                        onValueChange = { newText ->
-                            teamName2.value = newText
-                            MainActivity.Handler.nameTeam2 = newText
-                        },
-                        modifier = Modifier
-                            .background(color = Color.Transparent),
-                        textStyle = TextStyle(
-                            Color.Blue,
-                            fontSizeLarge,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        ),
-                        keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
-                        keyboardOptions = KeyboardOptions(
-                            KeyboardCapitalization.Words,
-                            imeAction = ImeAction.Done
-                        )
-                    )
-                    Text(
-                        text = "${scoreCounterTeam2.value}",
-                        fontSize = fontSizeSmall,
-                        modifier = Modifier.padding(horizontalPadding, verticalPadding)
-                    )
-                }
+            IconButton(modifier = Modifier.align(Alignment.CenterHorizontally),
+                onClick = {
+                    MainActivity.Handler.switchTeams()
+                    val teamName = teamName1.value
+                    teamName1.value = teamName2.value
+                    teamName2.value = teamName
+                })
+            {
+                Icon(
+                    painter = painterResource(id = R.drawable.swap_horiz),
+                    contentDescription = "Swap teams button",
+                    modifier = Modifier.size(32.dp)
+                )
             }
         }
     }
