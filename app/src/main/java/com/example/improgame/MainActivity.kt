@@ -88,6 +88,7 @@ class MainActivity : ComponentActivity() {
         fun increaseRoundScoreTeam1() {
             roundScoreTeam1.value++
             stack.push(1)
+
         }
 
         fun endRound() {
@@ -114,15 +115,11 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-
-@Preview(showBackground = true)
+@Preview(showSystemUi = true)
 @Composable
-fun DefaultPreview() {
-    ImproGameTheme {
-        MainScreen(MainActivity.Handler)
-    }
+fun MainScreenPreview() {
+    MainScreen(handler = MainActivity.Handler)
 }
-
 @Composable
 fun MainScreen(handler: MainActivity.Handler) {
     BackgroundInit()
@@ -187,6 +184,7 @@ private fun RoundScoreButtons(
                 Button(
                     onClick = {
                         MainActivity.Handler.increaseRoundScoreTeam0()
+
                     },
                     colors = ButtonDefaults.buttonColors(Color.Red),
                     modifier = Modifier
