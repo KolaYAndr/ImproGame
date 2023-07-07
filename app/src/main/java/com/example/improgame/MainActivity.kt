@@ -1,6 +1,7 @@
 package com.example.improgame
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.BorderStroke
@@ -37,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusManager
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
@@ -49,11 +49,10 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.improgame.ui.theme.ImproGameTheme
+import java.util.Stack
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,46 +64,52 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(
-                        Handler.nameTeam1,
-                        Handler.nameTeam2,
-                        Handler.scoreTeam1,
-                        Handler.scoreTeam2,
-                        Handler.roundScoreTeam1,
-                        Handler.roundScoreTeam2
-                    )
+                    MainScreen(Handler)
                 }
             }
         }
     }
 
     object Handler {
-        var scoreTeam1: Int = 0
-        var scoreTeam2: Int = 0
-        var roundScoreTeam1: Int = 0
-        var roundScoreTeam2: Int = 0
-        var nameTeam1: String = ""
-        var nameTeam2: String = ""
+        val scoreTeam0 = mutableStateOf(0)
+        val scoreTeam1 = mutableStateOf(0)
+        val roundScoreTeam0 = mutableStateOf(0)
+        val roundScoreTeam1 = mutableStateOf(0)
+        val nameTeam0 = mutableStateOf("")
+        val nameTeam1 = mutableStateOf("")
 
-        fun increaseRoundScoreTeam1() {
-            roundScoreTeam1++
+        private val stack = Stack<Int>()
+
+        fun increaseRoundScoreTeam0() {
+            roundScoreTeam0.value++
+            stack.push(0)
         }
 
-        fun increaseRoundScoreTeam2() {
-            roundScoreTeam2++
+        fun increaseRoundScoreTeam1() {
+            roundScoreTeam1.value++
+            stack.push(1)
         }
 
         fun endRound() {
-            scoreTeam1 += roundScoreTeam1
-            scoreTeam2 += roundScoreTeam2
+            scoreTeam0.value += roundScoreTeam0.value
+            scoreTeam1.value += roundScoreTeam1.value
 
-            roundScoreTeam1 = 0
-            roundScoreTeam2 = 0
+            roundScoreTeam0.value = 0
+            roundScoreTeam1.value = 0
         }
+
         fun switchTeams() {
-            val name1 = nameTeam1
-            nameTeam1 = nameTeam2
-            nameTeam2 = name1
+            val name1 = nameTeam0.value
+            nameTeam0.value = nameTeam1.value
+            nameTeam1.value = name1
+        }
+
+        fun reverse() {
+            when (stack.pop()) {
+                0 -> roundScoreTeam0.value--
+                1 -> roundScoreTeam1.value--
+                else -> Log.ERROR
+            }
         }
     }
 }
@@ -114,154 +119,118 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     ImproGameTheme {
-        MainScreen(
-            MainActivity.Handler.nameTeam1,
-            MainActivity.Handler.nameTeam2,
-            MainActivity.Handler.scoreTeam1,
-            MainActivity.Handler.scoreTeam2,
-            MainActivity.Handler.roundScoreTeam1,
-            MainActivity.Handler.roundScoreTeam2
-        )
+        MainScreen(MainActivity.Handler)
     }
 }
 
 @Composable
-fun MainScreen(
-    nameTeam1: String, nameTeam2: String, scoreTeam1: Int, scoreTeam2: Int,
-    roundScoreTeam1: Int, roundScoreTeam2: Int
-) {
-    val fontSizeSmall = 26.sp
-    val fontSizeLarge = 28.sp
-    val verticalPadding = 2.dp
-    val horizontalPadding = 0.dp
-    val fontSize = 24.sp
-    val cornerShape = 2.dp
-    val fraction = 0.3f
-    val boxPadding = 5.dp
-
-    val teamName1 = remember { mutableStateOf(nameTeam1) }
-    val teamName2 = remember { mutableStateOf(nameTeam2) }
-    val scoreCounterTeam1 = remember { mutableStateOf(scoreTeam1) }
-    val scoreCounterTeam2 = remember { mutableStateOf(scoreTeam2) }
-    val roundScoreCounterTeam1 = remember { mutableStateOf(roundScoreTeam1) }
-    val roundScoreCounterTeam2 = remember { mutableStateOf(roundScoreTeam2) }
-
-    val focusManager = LocalFocusManager.current
+fun MainScreen(handler: MainActivity.Handler) {
     BackgroundInit()
-    //добавить бокс для отмены и скрытия счёта
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceAround) {
-        TeamsAndScore(
-            teamName1,
-            fontSizeLarge,
-            focusManager,
-            scoreCounterTeam1,
-            fontSizeSmall,
-            horizontalPadding,
-            verticalPadding,
-            teamName2,
-            scoreCounterTeam2
-        )
+        TeamsAndScore(handler.nameTeam0, handler.scoreTeam0, handler.nameTeam1, handler.scoreTeam1)
 
-        EndRoundButton(
-            scoreCounterTeam1,
-            roundScoreCounterTeam1,
-            scoreCounterTeam2,
-            roundScoreCounterTeam2
-        )
+        EndRoundButton()
 
         RoundScoreButtons(
-            boxPadding,
-            roundScoreCounterTeam1,
-            fontSize,
-            horizontalPadding,
-            verticalPadding,
-            fraction,
-            cornerShape,
-            roundScoreCounterTeam2
+            handler.roundScoreTeam0,
+            handler.roundScoreTeam1
         )
     }
 }
 
 @Composable
 private fun RoundScoreButtons(
-    boxPadding: Dp,
-    roundScoreCounterTeam1: MutableState<Int>,
-    fontSize: TextUnit,
-    horizontalPadding: Dp,
-    verticalPadding: Dp,
-    fraction: Float,
-    cornerShape: Dp,
-    roundScoreCounterTeam2: MutableState<Int>
+    roundScoreTeam0: MutableState<Int>,
+    roundScoreTeam1: MutableState<Int>
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
+    val verticalPadding = 2.dp
+    val horizontalPadding = 0.dp
+    val fontSize = 24.sp
+    val cornerShape = 2.dp
+    val fraction = 0.3f
+    val boxPadding = 5.dp
+    val iconSize = 32.dp
+
+    val roundScoreCounterTeam0 = remember { roundScoreTeam0 }
+    val roundScoreCounterTeam1 = remember { roundScoreTeam1 }
+
+    Column {
+        IconButton(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            onClick = {
+                MainActivity.Handler.reverse()
+            },
+            enabled = roundScoreCounterTeam0.value + roundScoreCounterTeam1.value > 0
+        )
+        {
+            Icon(
+                painter = painterResource(id = R.drawable.arrow_back),
+                contentDescription = "Cancel round score increase",
+                modifier = Modifier.size(iconSize)
+            )
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth(0.5f)
-                    .padding(boxPadding)
+                    .padding(boxPadding),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                Text(
+                    text = "${roundScoreCounterTeam0.value}",
+                    fontSize = fontSize,
+                    modifier = Modifier.padding(horizontalPadding, verticalPadding)
+                )
+                Button(
+                    onClick = {
+                        MainActivity.Handler.increaseRoundScoreTeam0()
+                    },
+                    colors = ButtonDefaults.buttonColors(Color.Red),
+                    modifier = Modifier
+                        .fillMaxHeight(fraction)
+                        .fillMaxWidth()
+                        .clip(shape = RoundedCornerShape(cornerShape))
                 ) {
-                    Text(
-                        text = "${roundScoreCounterTeam1.value}",
-                        fontSize = fontSize,
-                        modifier = Modifier.padding(horizontalPadding, verticalPadding)
-                    )
-                    Button(
-                        onClick = {
-                            roundScoreCounterTeam1.value++
-                            MainActivity.Handler.increaseRoundScoreTeam1()
-                        },
-                        colors = ButtonDefaults.buttonColors(Color.Red), modifier = Modifier
-                            .fillMaxHeight(fraction)
-                            .fillMaxWidth()
-                            .clip(shape = RoundedCornerShape(cornerShape))
-                    ) {
 
-                    }
                 }
             }
-            Box(modifier = Modifier.padding(boxPadding)) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "${roundScoreCounterTeam2.value}",
-                        fontSize = fontSize,
-                        modifier = Modifier.padding(horizontalPadding, verticalPadding)
-                    )
-                    Button(
-                        onClick = {
-                            roundScoreCounterTeam2.value++
-                            MainActivity.Handler.increaseRoundScoreTeam2()
-                        },
-                        colors = ButtonDefaults.buttonColors(Color.Blue), modifier = Modifier
-                            .fillMaxHeight(fraction)
-                            .fillMaxWidth()
-                            .clip(shape = RoundedCornerShape(cornerShape))
-                    ) {
 
-                    }
+            Column(
+                modifier = Modifier
+                    .padding(boxPadding),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "${roundScoreCounterTeam1.value}",
+                    fontSize = fontSize,
+                    modifier = Modifier.padding(horizontalPadding, verticalPadding)
+                )
+                Button(
+                    onClick = {
+                        MainActivity.Handler.increaseRoundScoreTeam1()
+                    },
+                    colors = ButtonDefaults.buttonColors(Color.Blue),
+                    modifier = Modifier
+                        .fillMaxHeight(fraction)
+                        .fillMaxWidth()
+                        .clip(shape = RoundedCornerShape(cornerShape))
+                ) {
+
                 }
             }
+
         }
     }
 }
 
 @Composable
-private fun EndRoundButton(
-    scoreCounterTeam1: MutableState<Int>,
-    roundScoreCounterTeam1: MutableState<Int>,
-    scoreCounterTeam2: MutableState<Int>,
-    roundScoreCounterTeam2: MutableState<Int>
-) {
+private fun EndRoundButton() {
+    val fontSizeSmall = 26.sp
+    val borderStrokeWidth = 3.dp
+
     Box(
         modifier = Modifier
             .fillMaxWidth(),
@@ -269,21 +238,16 @@ private fun EndRoundButton(
     ) {
         Button(
             onClick = {
-                scoreCounterTeam1.value += roundScoreCounterTeam1.value
-                scoreCounterTeam2.value += roundScoreCounterTeam2.value
-                roundScoreCounterTeam1.value = 0
-                roundScoreCounterTeam2.value = 0
-
                 MainActivity.Handler.endRound()
             },
             modifier = Modifier
                 .background(Color.Transparent)
-                .border(BorderStroke(3.dp, Color.Gray), shape = CircleShape),
+                .border(BorderStroke(borderStrokeWidth, Color.Gray), shape = CircleShape),
             colors = ButtonDefaults.buttonColors(Color.Transparent)
         ) {
             Text(
                 text = stringResource(id = R.string.end_round),
-                fontSize = 26.sp,
+                fontSize = fontSizeSmall,
                 color = Color.Gray
             )
         }
@@ -292,112 +256,116 @@ private fun EndRoundButton(
 
 @Composable
 private fun TeamsAndScore(
-    teamName1: MutableState<String>,
-    fontSizeLarge: TextUnit,
-    focusManager: FocusManager,
-    scoreCounterTeam1: MutableState<Int>,
-    fontSizeSmall: TextUnit,
-    horizontalPadding: Dp,
-    verticalPadding: Dp,
-    teamName2: MutableState<String>,
-    scoreCounterTeam2: MutableState<Int>
+    nameTeam0: MutableState<String>,
+    scoreTeam0: MutableState<Int>,
+    nameTeam1: MutableState<String>,
+    scoreTeam1: MutableState<Int>
 ) {
-    Box(modifier = Modifier.fillMaxWidth()) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
+    val fontSizeSmall = 26.sp
+    val fontSizeLarge = 28.sp
+    val verticalPadding = 2.dp
+    val horizontalPadding = 0.dp
+    val focusManager = LocalFocusManager.current
+    val iconSize = 32.dp
+
+    val teamName0 = remember { nameTeam0 }
+    val teamName1 = remember { nameTeam1 }
+    val scoreCounterTeam0 = remember { scoreTeam0 }
+    val scoreCounterTeam1 = remember { scoreTeam1 }
+
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(0.5f),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Box(modifier = Modifier.fillMaxWidth(0.5f)) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        TextField(
-                            colors = TextFieldDefaults.colors(
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent,
-                            ),
-                            value = teamName1.value,
-                            onValueChange = { newText ->
-                                teamName1.value = newText
-                                MainActivity.Handler.nameTeam1 = newText
-                            },
-                            textStyle = TextStyle(
-                                Color.Red,
-                                fontSizeLarge,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            ),
-                            keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
-                            keyboardOptions = KeyboardOptions(
-                                KeyboardCapitalization.Words,
-                                imeAction = ImeAction.Done
-                            ),
-                            modifier = Modifier
-                                .requiredHeight(65.dp)
-                                .clip(RoundedCornerShape(20.dp))
-                        )
-                        Text(
-                            text = "${scoreCounterTeam1.value}",
-                            fontSize = fontSizeSmall,
-                            modifier = Modifier.padding(horizontalPadding, verticalPadding)
-                        )
-                    }
-                }
-                Box {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        TextField(
-                            colors = TextFieldDefaults.colors(
-                                unfocusedContainerColor = Color.Transparent,
-                                focusedContainerColor = Color.Transparent,
-                            ),
-                            value = teamName2.value,
-                            onValueChange = { newText ->
-                                teamName2.value = newText
-                                MainActivity.Handler.nameTeam2 = newText
-                            },
-                            textStyle = TextStyle(
-                                Color.Blue,
-                                fontSizeLarge,
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center
-                            ),
-                            keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
-                            keyboardOptions = KeyboardOptions(
-                                KeyboardCapitalization.Words,
-                                imeAction = ImeAction.Done
-                            ),
-                            modifier = Modifier
-                                .requiredHeight(65.dp)
-                                .clip(RoundedCornerShape(20.dp))
-                        )
-                        Text(
-                            text = "${scoreCounterTeam2.value}",
-                            fontSize = fontSizeSmall,
-                            modifier = Modifier.padding(horizontalPadding, verticalPadding)
-                        )
-                    }
-                }
-            }
-            IconButton(modifier = Modifier.align(Alignment.CenterHorizontally),
-                onClick = {
-                    MainActivity.Handler.switchTeams()
-                    val teamName = teamName1.value
-                    teamName1.value = teamName2.value
-                    teamName2.value = teamName
-                })
-            {
-                Icon(
-                    painter = painterResource(id = R.drawable.swap_horiz),
-                    contentDescription = "Swap teams button",
-                    modifier = Modifier.size(32.dp)
+                TextField(
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                    ),
+                    value = teamName0.value,
+                    onValueChange = { newText ->
+                        MainActivity.Handler.nameTeam0.value = newText
+                    },
+                    textStyle = TextStyle(
+                        Color.Red,
+                        fontSizeLarge,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    ),
+                    keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
+                    keyboardOptions = KeyboardOptions(
+                        KeyboardCapitalization.Words,
+                        imeAction = ImeAction.Done
+                    ),
+                    modifier = Modifier
+                        .requiredHeight(65.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                )
+                Text(
+                    text = "${scoreCounterTeam0.value}",
+                    fontSize = fontSizeSmall,
+                    modifier = Modifier.padding(horizontalPadding, verticalPadding)
                 )
             }
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TextField(
+                    colors = TextFieldDefaults.colors(
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                    ),
+                    value = teamName1.value,
+                    onValueChange = { newText ->
+                        MainActivity.Handler.nameTeam1.value = newText
+                    },
+                    textStyle = TextStyle(
+                        Color.Blue,
+                        fontSizeLarge,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    ),
+                    keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
+                    keyboardOptions = KeyboardOptions(
+                        KeyboardCapitalization.Words,
+                        imeAction = ImeAction.Done
+                    ),
+                    modifier = Modifier
+                        .requiredHeight(65.dp)
+                        .clip(RoundedCornerShape(20.dp))
+                )
+                Text(
+                    text = "${scoreCounterTeam1.value}",
+                    fontSize = fontSizeSmall,
+                    modifier = Modifier.padding(horizontalPadding, verticalPadding)
+                )
+            }
+
+        }
+        IconButton(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            onClick = {
+                MainActivity.Handler.switchTeams()
+            },
+            enabled = teamName0.value.length + teamName1.value.length > 0
+        )
+        {
+            Icon(
+                painter = painterResource(id = R.drawable.swap_horiz),
+                contentDescription = "Swap teams button",
+                modifier = Modifier.size(iconSize)
+            )
         }
     }
 }
+
 
 @Composable
 private fun BackgroundInit() {
