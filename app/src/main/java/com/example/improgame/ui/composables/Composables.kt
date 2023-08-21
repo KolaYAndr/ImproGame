@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -36,6 +37,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -45,12 +48,14 @@ import androidx.compose.ui.unit.sp
 import com.example.improgame.MainActivity
 import com.example.improgame.R
 import com.example.improgame.utils.Constants
+import com.example.improgame.utils.Constants.Companion.colorBlue
+import com.example.improgame.utils.Constants.Companion.colorRed
 import com.example.improgame.utils.Constants.Companion.fontSizeLarge
 import com.example.improgame.utils.Constants.Companion.fontSizeMedium
 import com.example.improgame.utils.Constants.Companion.fontSizeSmall
 import com.example.improgame.utils.Constants.Companion.iconSize
-import com.example.improgame.utils.Constants.Companion.maxHeight
-import com.example.improgame.utils.Constants.Companion.minHeight
+import com.example.improgame.utils.Constants.Companion.maxSize
+import com.example.improgame.utils.Constants.Companion.minSize
 import com.example.improgame.utils.Constants.Companion.paddingValue
 import com.example.improgame.utils.Constants.Companion.roundedCorner
 
@@ -83,11 +88,12 @@ private fun CustomButtonWithTextAbove(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .heightIn(min = minHeight.dp, max = maxHeight.dp)
+            .heightIn(min = minSize.dp, max = maxSize.dp)
+            .widthIn(min = minSize.dp, max = maxSize.dp)
     ) {
         Text(
             text = "${textSource.value}",
-            fontSize = fontSizeSmall.sp
+            fontSize = fontSizeMedium.sp
         )
         Button(
             onClick = onClick,
@@ -115,13 +121,13 @@ fun CustomButtonsWithTextsAbove(
         CustomButtonWithTextAbove(
             textSource = textSource0,
             onClick = onClick0,
-            buttonColor = ButtonDefaults.buttonColors(Color.Red),
+            buttonColor = ButtonDefaults.buttonColors(colorRed),
             buttonWidth = buttonWidth
         )
         CustomButtonWithTextAbove(
             textSource = textSource1,
             onClick = onClick1,
-            buttonColor = ButtonDefaults.buttonColors(Color.Blue),
+            buttonColor = ButtonDefaults.buttonColors(colorBlue),
             buttonWidth = buttonWidth
         )
     }
@@ -148,20 +154,30 @@ fun TeamNameAndTextBelow(
             value = teamName.value,
             onValueChange = onValueChange,
             textStyle = TextStyle(
-                textColor,
-                fontSizeLarge.sp,
+                color = textColor,
+                fontSize = fontSizeSmall.sp,
                 fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                fontFamily = FontFamily(Font(R.font.saytag_regular3, FontWeight.Normal))
             ),
             keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
             keyboardOptions = KeyboardOptions(
                 KeyboardCapitalization.Words,
                 imeAction = ImeAction.Done
-            )
+            ),
+            maxLines = 1,
+            placeholder = {
+                Text(
+                    text = stringResource(id = R.string.team_name_placeholder),
+                    color = textColor,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily(Font(R.font.saytag_regular3, FontWeight.Normal))
+                )
+            }
         )
         Text(
             text = "${scoreCounterTeam.value}",
-            fontSize = fontSizeMedium.sp
+            fontSize = fontSizeLarge.sp
         )
     }
 }

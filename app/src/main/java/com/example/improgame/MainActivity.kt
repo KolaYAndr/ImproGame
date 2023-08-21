@@ -32,6 +32,8 @@ import com.example.improgame.ui.composables.WindowType
 import com.example.improgame.ui.composables.getScreenWidthInDp
 import com.example.improgame.ui.composables.rememberWindowSize
 import com.example.improgame.ui.theme.ImproGameTheme
+import com.example.improgame.utils.Constants.Companion.colorBlue
+import com.example.improgame.utils.Constants.Companion.colorRed
 import com.example.improgame.utils.Constants.Companion.iconSize
 import com.example.improgame.utils.Constants.Companion.paddingValue
 import java.util.Stack
@@ -55,47 +57,47 @@ class MainActivity : ComponentActivity() {
     object Handler {
         val scoreTeam0 = mutableIntStateOf(0)
         val scoreTeam1 = mutableIntStateOf(0)
-        val roundScoreTeam0_jury0 = mutableIntStateOf(0)
-        val roundScoreTeam1_jury0 = mutableIntStateOf(0)
-        val roundScoreTeam0_jury1 = mutableIntStateOf(0)
-        val roundScoreTeam1_jury1 = mutableIntStateOf(0)
+        val roundScoreTeam0Jury0 = mutableIntStateOf(0)
+        val roundScoreTeam1Jury0 = mutableIntStateOf(0)
+        val roundScoreTeam0Jury1 = mutableIntStateOf(0)
+        val roundScoreTeam1Jury1 = mutableIntStateOf(0)
         val nameTeam0 = mutableStateOf("")
         val nameTeam1 = mutableStateOf("")
 
         private val stack = Stack<Int>()
 
         fun increaseRoundScoreTeam0Jury0() {
-            roundScoreTeam0_jury0.intValue++
+            roundScoreTeam0Jury0.intValue++
             stack.push(0)
         }
 
         fun increaseRoundScoreTeam1Jury0() {
-            roundScoreTeam1_jury0.intValue++
+            roundScoreTeam1Jury0.intValue++
             stack.push(1)
 
         }
 
         fun increaseRoundScoreTeam0Jury1() {
-            roundScoreTeam0_jury1.intValue++
+            roundScoreTeam0Jury1.intValue++
             stack.push(2)
         }
 
         fun increaseRoundScoreTeam1Jury1() {
-            roundScoreTeam1_jury1.intValue++
+            roundScoreTeam1Jury1.intValue++
             stack.push(3)
 
         }
 
         fun endRound() {
-            scoreTeam0.intValue += roundScoreTeam0_jury0.intValue
-            scoreTeam1.intValue += roundScoreTeam1_jury0.intValue
-            scoreTeam0.intValue += roundScoreTeam0_jury1.intValue
-            scoreTeam1.intValue += roundScoreTeam1_jury1.intValue
+            scoreTeam0.intValue += roundScoreTeam0Jury0.intValue
+            scoreTeam1.intValue += roundScoreTeam1Jury0.intValue
+            scoreTeam0.intValue += roundScoreTeam0Jury1.intValue
+            scoreTeam1.intValue += roundScoreTeam1Jury1.intValue
 
-            roundScoreTeam0_jury0.intValue = 0
-            roundScoreTeam1_jury0.intValue = 0
-            roundScoreTeam0_jury1.intValue = 0
-            roundScoreTeam1_jury1.intValue = 0
+            roundScoreTeam0Jury0.intValue = 0
+            roundScoreTeam1Jury0.intValue = 0
+            roundScoreTeam0Jury1.intValue = 0
+            roundScoreTeam1Jury1.intValue = 0
         }
 
         fun switchTeams() {
@@ -106,10 +108,10 @@ class MainActivity : ComponentActivity() {
 
         fun rollBack() {
             when (stack.pop()) {
-                0 -> roundScoreTeam0_jury0.intValue--
-                1 -> roundScoreTeam1_jury0.intValue--
-                2 -> roundScoreTeam0_jury1.intValue--
-                3 -> roundScoreTeam1_jury1.intValue--
+                0 -> roundScoreTeam0Jury0.intValue--
+                1 -> roundScoreTeam1Jury0.intValue--
+                2 -> roundScoreTeam0Jury1.intValue--
+                3 -> roundScoreTeam1Jury1.intValue--
 
                 else -> Log.ERROR
             }
@@ -143,10 +145,10 @@ fun MainScreen(handler: MainActivity.Handler) {
         EndRoundButton()
 
         RoundScoreButtons(
-            handler.roundScoreTeam0_jury0,
-            handler.roundScoreTeam1_jury0,
-            handler.roundScoreTeam0_jury1,
-            handler.roundScoreTeam1_jury1,
+            handler.roundScoreTeam0Jury0,
+            handler.roundScoreTeam1Jury0,
+            handler.roundScoreTeam0Jury1,
+            handler.roundScoreTeam1Jury1,
             window
         )
     }
@@ -289,7 +291,7 @@ private fun TeamsAndScore(
                 TeamNameAndTextBelow(
                     teamName = teamName0,
                     scoreCounterTeam = scoreCounterTeam0,
-                    textColor = Color.Red,
+                    textColor = colorRed,
                     focusManager = focusManager,
                     onValueChange = { newText ->
                         MainActivity.Handler.nameTeam0.value = newText
@@ -299,7 +301,7 @@ private fun TeamsAndScore(
                 TeamNameAndTextBelow(
                     teamName = teamName1,
                     scoreCounterTeam = scoreCounterTeam1,
-                    textColor = Color.Blue,
+                    textColor = colorBlue,
                     focusManager = focusManager,
                     onValueChange = { newText ->
                         MainActivity.Handler.nameTeam1.value = newText
@@ -315,6 +317,3 @@ private fun TeamsAndScore(
         }
     }
 }
-
-
-
