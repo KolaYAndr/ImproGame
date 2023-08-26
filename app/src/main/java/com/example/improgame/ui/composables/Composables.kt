@@ -47,8 +47,6 @@ import androidx.compose.ui.unit.sp
 import com.example.improgame.MainActivity
 import com.example.improgame.R
 import com.example.improgame.utils.Constants
-import com.example.improgame.utils.Constants.Companion.colorBlue
-import com.example.improgame.utils.Constants.Companion.colorRed
 import com.example.improgame.utils.Constants.Companion.fontSizeLarge
 import com.example.improgame.utils.Constants.Companion.fontSizeMedium
 import com.example.improgame.utils.Constants.Companion.fontSizeSmall
@@ -114,19 +112,21 @@ fun CustomButtonsWithTextsAbove(
     onClick0: () -> Unit,
     textSource1: MutableState<Int>,
     onClick1: () -> Unit,
-    buttonWidth: Int
+    buttonWidth: Int,
+    color1: Color,
+    color2: Color
 ) {
     Row {
         CustomButtonWithTextAbove(
             textSource = textSource0,
             onClick = onClick0,
-            buttonColor = ButtonDefaults.buttonColors(colorRed),
+            buttonColor = ButtonDefaults.buttonColors(color1),
             buttonWidth = buttonWidth
         )
         CustomButtonWithTextAbove(
             textSource = textSource1,
             onClick = onClick1,
-            buttonColor = ButtonDefaults.buttonColors(colorBlue),
+            buttonColor = ButtonDefaults.buttonColors(color2),
             buttonWidth = buttonWidth
         )
     }

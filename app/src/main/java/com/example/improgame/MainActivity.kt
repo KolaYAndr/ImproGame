@@ -31,9 +31,9 @@ import com.example.improgame.ui.composables.WindowSize
 import com.example.improgame.ui.composables.WindowType
 import com.example.improgame.ui.composables.getScreenWidthInDp
 import com.example.improgame.ui.composables.rememberWindowSize
+import com.example.improgame.ui.theme.Blue
 import com.example.improgame.ui.theme.ImproGameTheme
-import com.example.improgame.utils.Constants.Companion.colorBlue
-import com.example.improgame.utils.Constants.Companion.colorRed
+import com.example.improgame.ui.theme.Red
 import com.example.improgame.utils.Constants.Companion.iconSize
 import com.example.improgame.utils.Constants.Companion.paddingValue
 import java.util.Stack
@@ -186,7 +186,9 @@ private fun RoundScoreButtons(
                 onClick0 = { MainActivity.Handler.increaseRoundScoreTeam0Jury0() },
                 textSource1 = roundScoreCounterTeam1Jury0,
                 onClick1 = { MainActivity.Handler.increaseRoundScoreTeam1Jury0() },
-                buttonWidth = buttonWidth
+                buttonWidth = buttonWidth,
+                color1 = Red,
+                color2 = Blue
             )
             CustomIconButton(
                 onClick = { MainActivity.Handler.rollBack() },
@@ -199,7 +201,9 @@ private fun RoundScoreButtons(
                 onClick0 = { MainActivity.Handler.increaseRoundScoreTeam0Jury1() },
                 textSource1 = roundScoreCounterTeam1Jury1,
                 onClick1 = { MainActivity.Handler.increaseRoundScoreTeam1Jury1() },
-                buttonWidth = buttonWidth
+                buttonWidth = buttonWidth,
+                color1 = Red,
+                color2 = Blue
             )
         }
     } else {
@@ -220,7 +224,9 @@ private fun RoundScoreButtons(
                     onClick0 = { MainActivity.Handler.increaseRoundScoreTeam0Jury0() },
                     textSource1 = roundScoreCounterTeam1Jury0,
                     onClick1 = { MainActivity.Handler.increaseRoundScoreTeam1Jury0() },
-                    buttonWidth = buttonWidth
+                    buttonWidth = buttonWidth,
+                    color1 = Red,
+                    color2 = Blue
                 )
             }
         }
@@ -291,7 +297,7 @@ private fun TeamsAndScore(
                 TeamNameAndTextBelow(
                     teamName = teamName0,
                     scoreCounterTeam = scoreCounterTeam0,
-                    textColor = colorRed,
+                    textColor = Red,
                     focusManager = focusManager,
                     onValueChange = { newText ->
                         MainActivity.Handler.nameTeam0.value = newText
@@ -301,7 +307,7 @@ private fun TeamsAndScore(
                 TeamNameAndTextBelow(
                     teamName = teamName1,
                     scoreCounterTeam = scoreCounterTeam1,
-                    textColor = colorBlue,
+                    textColor = Blue,
                     focusManager = focusManager,
                     onValueChange = { newText ->
                         MainActivity.Handler.nameTeam1.value = newText

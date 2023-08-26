@@ -1,6 +1,5 @@
 package com.example.improgame.utils
 
-import androidx.compose.ui.graphics.Color
 
 class Constants {
     companion object {
@@ -15,8 +14,5 @@ class Constants {
 
         const val borderStrokeWidth = 3
         const val roundedCorner = 2
-
-        val colorBlue = Color(28, 100, 242)
-        val colorRed = Color(240, 82, 82)
     }
 }
