@@ -22,7 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.improgame.ui.composables.BackgroundInit
+import com.example.improgame.ui.composables.Background
 import com.example.improgame.ui.composables.CustomButtonsWithTextsAbove
 import com.example.improgame.ui.composables.CustomIconButton
 import com.example.improgame.ui.composables.EndRoundButton
@@ -128,7 +128,7 @@ fun MainScreenPreview() {
 @Composable
 fun MainScreen(handler: MainActivity.Handler) {
     val window = rememberWindowSize()
-    BackgroundInit(R.drawable.fon)
+    Background(R.drawable.back)
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceAround,

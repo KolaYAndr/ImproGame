@@ -41,7 +41,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -149,7 +148,7 @@ fun TeamNameAndTextBelow(
         TextField(
             colors = TextFieldDefaults.colors(
                 unfocusedContainerColor = Color.Transparent,
-                focusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent
             ),
             value = teamName.value,
             onValueChange = onValueChange,
@@ -161,10 +160,7 @@ fun TeamNameAndTextBelow(
                 fontFamily = FontFamily(Font(R.font.saytag_regular3, FontWeight.Normal))
             ),
             keyboardActions = KeyboardActions(onAny = { focusManager.clearFocus() }),
-            keyboardOptions = KeyboardOptions(
-                KeyboardCapitalization.Words,
-                imeAction = ImeAction.Done
-            ),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             maxLines = 1,
             placeholder = {
                 Text(
@@ -203,7 +199,7 @@ fun EndRoundButton() {
 }
 
 @Composable
-fun BackgroundInit(@DrawableRes resId: Int) {
+fun Background(@DrawableRes resId: Int) {
     Image(
         painter = painterResource(id = resId),
         contentDescription = "background",
