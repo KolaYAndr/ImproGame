@@ -3,8 +3,13 @@
     android:height="108dp"
     android:viewportWidth="512"
     android:viewportHeight="512">
-  <path
-      android:pathData="M0,0V512H512V0Z"
-      android:fillColor="#48097f"
-      android:fillType="evenOdd"/>
+  <group android:scaleX="0.99"
+      android:scaleY="0.99"
+      android:translateX="2.56"
+      android:translateY="2.56">
+    <path
+        android:pathData="M0,0V512H512V0Z"
+        android:fillColor="#101a24"
+        android:fillType="evenOdd"/>
+  </group>
 </vector>
